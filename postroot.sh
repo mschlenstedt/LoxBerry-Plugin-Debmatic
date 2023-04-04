@@ -29,6 +29,7 @@ echo "deb [signed-by=/usr/share/keyrings/debmatic.gpg] https://www.debmatic.de/d
 echo "<INFO> Updating apt Databases..."
 export APT_LISTCHANGES_FRONTEND=none
 export DEBIAN_FRONTEND=noninteractive
+export RUNLEVEL=1
 /usr/bin/dpkg --configure -a --force-confdef
 apt-get -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install
 apt-get -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages --purge autoremove
