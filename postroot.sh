@@ -139,7 +139,7 @@ else
 fi
 
 echo "<INFO> Installing Debmatic..."
-apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install debmatic cloudmatic cuxd xml-api
+RUNLEVEL=1 apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install debmatic cuxd xml-api
 
 echo "<INFO> Disabling Debmatic SSDPD Service (LoxBerry has it's own service)..."
 systemctl stop debmatic-ssdpd
