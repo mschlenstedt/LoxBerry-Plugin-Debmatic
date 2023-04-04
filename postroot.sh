@@ -139,7 +139,7 @@ else
 fi
 
 echo "<INFO> Installing Debmatic..."
-apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install debmatic
+apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install debmatic cloudmatic cuxd homematic-check-mk xml-api
 
 echo "<INFO> Disabling Debmatic SSDPD Service (LoxBerry has it's own service)..."
 systemctl stop debmatic-ssdpd
@@ -147,7 +147,7 @@ systemctl disable debmatic-ssdpd
 
 echo "<INFO> Changing Homematic WebUI Port to 8081"
 /bin/sed -i 's#^server\.port\(\s*\)=\(.*\)$#server\.port\1= 8081#' /etc/lighttpd/lighttpd.conf
-/bin/sed -i 's#^server\.port\(\s*\)=\(.*\)$#server\.port\1= 8081#' /etc/debmatic/lighttpd/lighttpd.conf
+#/bin/sed -i 's#^server\.port\(\s*\)=\(.*\)$#server\.port\1= 8081#' /etc/debmatic/lighttpd/lighttpd.conf
 /bin/sed -i 's#^var\.debmatic_webui_http_port\(\s*\)=\(.*\)$#var\.debmatic_webui_http_port\1= 8081#' /etc/debmatic/webui.conf
 
 echo "<INFO> Installing Node-Red..."
