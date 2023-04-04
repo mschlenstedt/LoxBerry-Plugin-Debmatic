@@ -141,11 +141,20 @@ fi
 echo "<INFO> Installing Debmatic..."
 apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install debmatic
 
+echo "<INFO> Disabling Debmatic SSDPD Service (LoxBerry has it's own service)..."
+systemctl stop debmatic-ssdpd
+systemctl disable debmatic-ssdpd
+
+echo "<INFO> Changing Homematic WebUI Port to 8081"
+/bin/sed -i 's#^server\.port\(\s*\)=\(.*\)$#server\.port\1= 8081#' /etc/lighttpd/lighttpd.conf
+/bin/sed -i 's#^server\.port\(\s*\)=\(.*\)$#server\.port\1= 8081#' /etc/debmatic/lighttpd/lighttpd.conf
+/bin/sed -i 's#^var\.debmatic_webui_http_port\(\s*\)=\(.*\)$#var\.debmatic_webui_http_port\1= 8081#' /etc/debmatic/webui.conf
+
 echo "<INFO> Installing Node-Red..."
 /boot/dietpi/dietpi-software install 122
 
 echo "<INFO> Installing Node-RED Nodes for the Homematic CCU..."
-#yes | npm install node-red-contrib-ccu
+yes | npm install -g node-red-contrib-ccu
 
 echo "<INFO> Check if we have found a hb-rf-eth Module..."
 IP=""
@@ -176,9 +185,9 @@ elif [ $COUNT -ge 2 ]; then
 fi
 
 if [ -z "$IP" ]; then
-	echo "Nichts"
+	echo "<INFO> Do not found a hb-rf-eth in your network..."
 else
-  echo "HB_RF_ETH_ADDRESS=\"$IP\""
+	echo "<INFO> Found a hb-rf-eth Module at $IP..."
 fi
 
 exit 0
