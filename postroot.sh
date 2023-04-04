@@ -1,4 +1,4 @@
-#!/bin/bash
+#/bin/bash
 
 # To use important variables from command line use the following code:
 COMMAND=$0    # Zero argument is shell command
@@ -35,7 +35,8 @@ apt-get -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades -
 apt-get -y --allow-unauthenticated --allow-downgrades --allow-remove-essential --allow-change-held-packages --allow-releaseinfo-change update
 
 echo "<INFO> Installing Kernel Modules for Debmatic..."
-apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install `dpkg --get-selections | grep 'linux-image-' | grep '\sinstall' | sed -e 's/linux-image-\([a-z0-9-]\+\).*/linux-headers-\1/'`
+#apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install `dpkg --get-selections | grep 'linux-image-' | grep '\sinstall' | sed -e 's/linux-image-\([a-z0-9-]\+\).*/linux-headers-\1/'`
+apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install linux-headers-$(uname -r)
 
 apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install pivccu-modules-dkms hb-rf-eth
 
@@ -144,7 +145,7 @@ echo "<INFO> Installing Node-Red..."
 /boot/dietpi/dietpi-software install 122
 
 echo "<INFO> Installing Node-RED Nodes for the Homematic CCU..."
-yes | npm install node-red-contrib-ccu
+#yes | npm install node-red-contrib-ccu
 
 echo "<INFO> Check if we have found a hb-rf-eth Module..."
 IP=""
