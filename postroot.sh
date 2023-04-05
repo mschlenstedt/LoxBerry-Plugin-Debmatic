@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 # To use important variables from command line use the following code:
 COMMAND=$0    # Zero argument is shell command
@@ -158,38 +158,5 @@ echo "<INFO> Installing Node-Red..."
 echo "<INFO> Installing Node-RED Nodes for the Homematic CCU..."
 yes | npm install -g node-red-contrib-ccu
 
-echo "<INFO> Check if we have found a hb-rf-eth Module..."
-IP=""
-CHOICES=""
-declare -A DEVICES=()
-
-DEVICESRAW=`avahi-browse -p -t -r -k _raw-uart._udp | grep -e "^=" | awk '{split($0,a,";"); print a[4],a[8]}'`
-IFS=$'\n'; for line in $DEVICESRAW; do
-  DEVNAME=`echo "$line" | awk '{print $1}'`
-  DEVIP=`echo "$line" | awk '{print $2}'`
-
-  if [ ! -z "$CHOICES" ]; then
-    CHOICES="$CHOICES, $DEVNAME ($DEVIP)"
-  else
-    CHOICES="$DEVNAME ($DEVIP)"
-  fi
-  DEVICES["$DEVNAME"]="$DEVIP"
-done
-
-COUNT="${#DEVICES[@]}"
-if [ $COUNT -eq 1 ]; then
-  IP=${DEVICES[${!DEVICES[@]}]}
-elif [ $COUNT -ge 2 ]; then
-  DEVNAME=`echo "$RET" | awk '{print $1}'`
-  if [ ! -z "$DEVNAME" ]; then
-    IP=${DEVICES["$DEVNAME"]}
-  fi
-fi
-
-if [ -z "$IP" ]; then
-	echo "<INFO> Do not found a hb-rf-eth in your network..."
-else
-	echo "<INFO> Found a hb-rf-eth Module at $IP..."
-fi
 
 exit 0
