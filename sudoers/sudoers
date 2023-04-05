@@ -1,0 +1,2 @@
+loxberry ALL = NOPASSWD: /usr/sbin/debmatic-info
+loxberry ALL = NOPASSWD: /usr/bin/detect_radio_module
