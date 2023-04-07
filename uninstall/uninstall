@@ -1,0 +1,3 @@
+#!/bin/bash
+
+apt-get purge debmatiapt-get purge debmatic pivccu-modules-dkms hb-rf-eth
