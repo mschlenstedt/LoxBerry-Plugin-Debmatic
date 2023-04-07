@@ -8,12 +8,6 @@ if [ -e "$LBPCONFIG/debmatic_installed" ]; then
 	exit 0
 fi
 
-if dpkg -s debmatic > /dev/null 2>&1; then
-	systemctl stop debmatic-ssdpd
-	systemctl disable debmatic-ssdpd
-	exit 0
-fi
-
 echo "<INFO> Installing Node-Red..."
 /boot/dietpi/dietpi-software install 122
 
@@ -23,6 +17,6 @@ sudo -u nodered yes | npm --prefix mnt/dietpi_userdata/node-red install node-red
 touch $LBPCONFIG/$PLUGINNAME/debmatic_installed
 
 #rm $LBHOMEDIR/system/daemons/plugins/$0
-reboot
+#reboot
 
 exit 0
