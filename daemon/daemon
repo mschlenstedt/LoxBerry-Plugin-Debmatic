@@ -1,8 +1,14 @@
 #!/bin/bash
 
-PLUGINNAME=$0
+PLUGINNAME=REPLACELBPPLUGINDIR
 
 if [ -e "$LBPCONFIG/debmatic_installed" ]; then
+	systemctl stop debmatic-ssdpd
+	systemctl disable debmatic-ssdpd
+	exit 0
+fi
+
+if dpkg -s debmatic > /dev/null 2>&1; then
 	systemctl stop debmatic-ssdpd
 	systemctl disable debmatic-ssdpd
 	exit 0
