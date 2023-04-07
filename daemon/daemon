@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PLUGINNAME=$0
+
 if [ -e "$LBPCONFIG/debmatic_installed" ]; then
 	systemctl stop debmatic-ssdpd
 	systemctl disable debmatic-ssdpd
@@ -12,7 +14,7 @@ echo "<INFO> Installing Node-Red..."
 echo "<INFO> Installing Node-RED Nodes for the Homematic CCU..."
 sudo -u nodered yes | npm --prefix mnt/dietpi_userdata/node-red install node-red-contrib-ccu
 
-touch $LBPCONFIG/debmatic_installed
+touch $LBPCONFIG/$PLUGINNAME/debmatic_installed
 
 #rm $LBHOMEDIR/system/daemons/plugins/$0
 reboot
