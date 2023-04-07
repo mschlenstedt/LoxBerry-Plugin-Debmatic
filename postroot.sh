@@ -134,15 +134,21 @@ if [ $G_HW_MODEL -lt 10 ]; then
 else
 
 	echo "<INFO> We are on a Non-Raspberry. Add special options and packages..."
-
 	apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install pivccu-devicetree-armbian
 
 fi
 
-echo "<INFO> Installing Node-Red..."
-/boot/dietpi/dietpi-software install 122
+echo "<INFO> Installing Debmatic..."
+apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install debmatic cuxd xml-api
 
-echo "<INFO> Installing Node-RED Nodes for the Homematic CCU..."
-sudo -u nodered yes | npm --prefix mnt/dietpi_userdata/node-red install node-red-contrib-ccu
+echo "<INFO> Disabling Debmatic SSDPD Service (LoxBerry has it's own service)..."
+systemctl stop debmatic-ssdpd
+systemctl disable debmatic-ssdpd
+systemctl stop debmatic
+systemctl stop lighttpd
+
+echo "<INFO> Changing Homematic WebUI Port to 8081"
+/bin/sed -i 's#^server\.port\(\s*\)=\(.*\)$#server\.port\1= 8081#' /etc/lighttpd/lighttpd.conf
+/bin/sed -i 's#^var\.debmatic_webui_http_port\(\s*\)=\(.*\)$#var\.debmatic_webui_http_port\1= 8081#' /etc/debmatic/webui.conf
 
 exit 0
