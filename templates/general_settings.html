@@ -68,7 +68,7 @@
 }
 
 .boxitem {
-	padding: 5px;
+	padding: 15px;
 	text-align: center;
 	vertical-align: middle;
 }
@@ -115,19 +115,35 @@
 		</h2>
 		<div class="box">
 			<div class="boxrow">
-					<div class="boxitem small" style="width: 15%">
+					<div class="boxitem small" style="width: 20%; text-align:right">
 						<TMPL_VAR SETTINGS.LABEL_HMWEBUI>
 					</div>
-					<div class="boxitem" style="width:50%">
+					<div class="boxitem" style="width:50%; text-align: left">
 						<input type="text" id="hmport" data-mini="true" value="" placeholder="<TMPL_VAR SETTINGS.LABEL_HMWEBUI_HINT>">
 					</div>
 			</div>
 			<div class="boxrow">
-					<div class="boxitem small" style="width: 15%">
+					<div class="boxitem small" style="width: 20%; text-align:right">
 						<TMPL_VAR SETTINGS.LABEL_NRWEBUI>
 					</div>
-					<div class="boxitem" style="width:50%">
+					<div class="boxitem" style="width:50%; text-align: left">
 						<input type="text" id="nrport" data-mini="true" value="" placeholder="<TMPL_VAR SETTINGS.LABEL_NRWEBUI_HINT>">
+					</div>
+			</div>
+			<div class="boxrow">
+					<div class="boxitem small" style="width: 20%; text-align:right">
+						<TMPL_VAR SETTINGS.LABEL_ENABLE_HB-RF-ETH>
+					</div>
+					<div class="boxitem" style="width:50%; text-align: left">
+						<input type="checkbox" id="hbrfethenable" value="0" data-role="flipswitch" data-mini="true">
+					</div>
+			</div>
+			<div class="boxrow">
+					<div class="boxitem small" style="width: 20%; text-align:right">
+						<TMPL_VAR SETTINGS.LABEL_HB-RF-ETH>
+					</div>
+					<div class="boxitem" style="width:50%; text-align: left">
+						<input type="text" id="hbrfethip" data-mini="true" value="" placeholder="<TMPL_VAR SETTINGS.LABEL_HB-RF-ETH_HINT>">
 					</div>
 			</div>
 			<br><br>

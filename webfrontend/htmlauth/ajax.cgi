@@ -23,9 +23,10 @@ my $q = $cgi->Vars;
 #LOGSTART "Request $q->{action}";
 
 if( $q->{action} eq "servicerestart" ) {
-	my $exitcode = execute ("sudo systemctl restart debmatic");
+	my $exitcode1 = execute ("sudo systemctl restart debmatic");
+	my $exitcode2 = execute ("sudo systemctl restart node-red");
 	sleep(3);
-	if ($exitcode eq "0") {
+	if ($exitcode1 + $exitcode2 eq "0") {
 		$response = encode_json( { status => "0" } );
 	} else {
 		$response = encode_json( { status => "1" } );
@@ -33,9 +34,10 @@ if( $q->{action} eq "servicerestart" ) {
 }
 
 if( $q->{action} eq "servicestop" ) {
-	my $exitcode = execute ("sudo systemctl stop debmatic");
+	my $exitcode1 = execute ("sudo systemctl stop debmatic");
+	my $exitcode2 = execute ("sudo systemctl stop node-red");
 	sleep(3);
-	if ($exitcode eq "0") {
+	if ($exitcode1 + $exitcode2 eq "0") {
 		$response = encode_json( { status => "0" } );
 	} else {
 		$response = encode_json( { status => "1" } );
@@ -52,6 +54,7 @@ if( $q->{action} eq "servicestatus" ) {
 	($pids{'multimacd'}, $output) = execute ("pgrep -f /bin/multimacd");
 	($pids{'cuxd'}, $output) = execute ("pgrep -f /usr/local/addons/cuxd/cux");
 	($pids{'regahss'}, $output) = execute ("pgrep -f /bin/ReGaHss");
+	($pids{'nodered'}, $output) = execute ("pgrep -f node-red");
 	$response{'status'} = \%pids;
 	$response = encode_json( \%response );
 }
@@ -71,6 +74,14 @@ if( $q->{action} eq "getconfig" ) {
 	chomp $hmport;
 	my $nrport = qx ( cat /mnt/dietpi_userdata/node-red/settings.js | grep -e "^\\s*uiPort:.*" | sed 's/[^0-9]*//g' );
 	chomp $nrport;
+	my $hb_rf_eth_ip = qx ( cat /etc/default/hb_rf_eth | grep -e "^HB_RF_ETH_ADDRESS.*" | cut -d "=" -f2 | xargs );
+	chomp $hb_rf_eth_ip;
+	if ( $hb_rf_eth_ip ne "" ) {
+		$response{'hbrfethip'} = $hb_rf_eth_ip;
+		$response{'hbrfethenable'} = "1";
+	} else {
+		$response{'hbrfethenable'} = "0";
+	}
 	$response{'hmport'} = "$hmport";
 	$response{'nrport'} = "$nrport";
 	$response = encode_json( \%response );
@@ -79,9 +90,11 @@ if( $q->{action} eq "getconfig" ) {
 if( $q->{action} eq "saveconfig" ) {
 	my $hmport = $q->{"hmport"};
 	my $nrport = $q->{"nrport"};
+	my $hbrfethip= $q->{"hbrfethip"};
+	my $hbrfethenable= $q->{"hbrfethenable"};
 	$hmport = "8081" if !$hmport;
 	$nrport = "1880" if !$nrport;
-	execute ("sudo $lbpbindir/saveconfig.sh $hmport $nrport");
+	execute ("sudo $lbpbindir/saveconfig.sh $hmport $nrport $hbrfethenable $hbrfethip ");
 	my %response;
 	$response{'hmport'} = "$hmport";
 	$response{'nrport'} = "$nrport";

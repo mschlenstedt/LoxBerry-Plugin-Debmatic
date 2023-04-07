@@ -26,6 +26,7 @@ function servicestatus(update) {
 		$("#iconmultimacd").html("<img src='./images/unknown_20.png'>");
 		$("#iconregahss").html("<img src='./images/unknown_20.png'>");
 		$("#iconcuxd").html("<img src='./images/unknown_20.png'>");
+		$("#iconnodered").html("<img src='./images/unknown_20.png'>");
 	}
 
 	$.ajax( { 
@@ -43,6 +44,7 @@ function servicestatus(update) {
 		$("#iconmultimacd").html("<img src='./images/unknown_20.png'>");
 		$("#iconregahss").html("<img src='./images/unknown_20.png'>");
 		$("#iconcuxd").html("<img src='./images/unknown_20.png'>");
+		$("#iconnodered").html("<img src='./images/unknown_20.png'>");
 	})
 	.done(function( data ) {
 		console.log( "Servicestatus Success", data );
@@ -76,6 +78,11 @@ function servicestatus(update) {
 		} else {
 			$("#iconcuxd").html("<img src='./images/error_20.png'>");
 		}
+		if (data.status.nodered == "0") {
+			$("#iconnodered").html("<img src='./images/check_20.png'>");
+		} else {
+			$("#iconnodered").html("<img src='./images/error_20.png'>");
+		}
 	})
 	.always(function( data ) {
 		console.log( "Servicestatus Finished", data );
@@ -93,6 +100,7 @@ function servicerestart() {
 	$("#iconmultimacd").html("<img src='./images/unknown_20.png'>");
 	$("#iconregahss").html("<img src='./images/unknown_20.png'>");
 	$("#iconcuxd").html("<img src='./images/unknown_20.png'>");
+	$("#iconnodered").html("<img src='./images/unknown_20.png'>");
 	$("#btnservicerestart").addClass("ui-state-disabled");
 	$("#btnservicestop").addClass("ui-state-disabled");
 	$.ajax( { 
@@ -128,6 +136,7 @@ function servicestop() {
 	$("#iconmultimacd").html("<img src='./images/unknown_20.png'>");
 	$("#iconregahss").html("<img src='./images/unknown_20.png'>");
 	$("#iconcuxd").html("<img src='./images/unknown_20.png'>");
+	$("#iconnodered").html("<img src='./images/unknown_20.png'>");
 	$("#btnservicerestart").addClass("ui-state-disabled");
 	$("#btnservicestop").addClass("ui-state-disabled");
 	$.ajax( { 
@@ -159,13 +168,13 @@ function debmaticinfo() {
 	$("#debmaticinfo").attr("style", "background:#dfdfdf").html("<TMPL_VAR "COMMON.HINT_UPDATING">");
 
 	$.ajax( { 
-			url:  'ajax.cgi',
-			timeout: 9000, // sets timeout to 3 seconds
-			type: 'POST',
-			data: { 
-				action: 'debmaticinfo'
-			}
-		} )
+		url:  'ajax.cgi',
+		timeout: 9000, // sets timeout to 3 seconds
+		type: 'POST',
+		data: { 
+			action: 'debmaticinfo'
+		}
+	} )
 	.fail(function( data ) {
 		console.log( "Debmaticinfo Fail", data );
 		$("#debmaticinfo").attr("style", "background:#dfdfdf; color:red").html("<TMPL_VAR "COMMON.HINT_FAILED">");
@@ -198,10 +207,15 @@ function getconfig() {
 	})
 	.done(function( data ) {
 		console.log( "getconfig Success", data );
-
 		// Settings
 		$("#hmport").val(data.hmport);
 		$("#nrport").val(data.nrport);
+		$("#hbrfethip").val(data.hbrfethip);
+		if ( data.hbrfethenable == "1" ) {
+			$("#hbrfethenable").prop('checked', true).flipswitch('refresh');
+		} else {
+			$("#hbrfethenable").prop('checked', false).flipswitch('refresh');
+		}
 	})
 	.always(function( data ) {
 		console.log( "getconfig Finished" );
@@ -223,7 +237,9 @@ function saveconfig() {
 		data: {
 			action: 'saveconfig',
 			hmport: $("#hmport").val(),
-			nrport: $("#nrport").val()
+			nrport: $("#nrport").val(),
+			hbrfethip: $("#hbrfethip").val(),
+			hbrfethenable: $("#hbrfethenable").prop("checked")
 		}
 	})
 	.fail(function( data ) {
@@ -238,6 +254,7 @@ function saveconfig() {
 	})
 	.always(function( data ) {
 		console.log( "saveconfig Finished" );
+		getconfig();
 		$("#btnssave").removeClass("ui-state-disabled");
 	})
 }
