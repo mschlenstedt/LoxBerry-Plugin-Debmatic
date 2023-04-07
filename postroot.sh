@@ -47,7 +47,7 @@ if [ -e /boot/dietpi/.hw_model ]; then
 	. /boot/dietpi/.hw_model
 else
 	echo "<FAIL> Cannot read your hardware details from /boot/dietpi/.hw_model"
-	exit 1
+	exit 2
 fi
 
 # We are on a Raspberry
