@@ -140,6 +140,14 @@ else
 fi
 
 echo "<INFO> Installing Debmatic..."
+if [ ! -e "/usr/sbin/policy-rc.d" ]; then
+	cat > /usr/sbin/policy-rc.d <<EOF
+#!/bin/sh
+exit 101
+EOF
+	chmod a+x /usr/sbin/policy-rc.d
+	touch /usr/sbin/policy-rc.d.removeme
+fi
 RUNLEVEL=1 apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install debmatic cuxd xml-api
 
 echo "<INFO> Disabling Debmatic SSDPD Service (LoxBerry has it's own service)..."
@@ -147,6 +155,12 @@ systemctl stop debmatic-ssdpd
 systemctl disable debmatic-ssdpd
 systemctl stop debmatic
 systemctl stop lighttpd
+systemctl start apache2
+
+if [ ! -e "/usr/sbin/policy-rc.d.removeme" ]; then
+	rm /usr/sbin/policy-rc.d.removeme
+	rm /usr/sbin/policy-rc.d
+fi
 
 echo "<INFO> Changing Homematic WebUI Port to 8081"
 /bin/sed -i 's#^server\.port\(\s*\)=\(.*\)$#server\.port\1= 8081#' /etc/lighttpd/lighttpd.conf
