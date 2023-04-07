@@ -1,10 +1,11 @@
 #!/bin/bash
 
 echo "Purge Debmatic"
-apt-get purge debmatiapt-get purge debmatic pivccu-modules-dkms hb-rf-eth
+apt-get -y purge debmatiapt-get purge debmatic pivccu-modules-dkms hb-rf-eth
 
 echo "Remove Debmatic Repository"
 rm /usr/share/keyrings/debmatic.gpg
 rm /etc/apt/sources.list.d/debmatic.list
-apt-get update
-"
+apt-get -y update
+
+exit 0
