@@ -72,32 +72,23 @@ if( $q->{ajax} ) {
 	
 	require LoxBerry::Web;
 	
-	# Create symbolic link to measurements
-	my $res = qx (ln -s /dev/shm/poolmanager-measurements.json $lbphtmlauthdir/measurements.json);
-
-	# Default is gpio_settings form
-	$q->{form} = "measurements" if !$q->{form};
-
-	if ($q->{form} eq "atlas") {
-		my $templatefile = "$lbptemplatedir/atlas_settings.html";
-		$template = LoxBerry::System::read_file($templatefile);
-		&form_atlas();
+	if ( ! -e "$lbplogdir/hmserver.log" ) {
+		my $exitcode = execute ( "ln -s /var/log/hmserver.log $lbplogdir/hmserver.log");
 	}
-	elsif ($q->{form} eq "logs") {
-		my $templatefile = "$lbptemplatedir/log_settings.html";
+
+	# Default is debmatic form
+	$q->{form} = "debmatic" if !$q->{form};
+
+	if ($q->{form} eq "debmatic") {
+		my $templatefile = "$lbptemplatedir/debmatic_settings.html";
 		$template = LoxBerry::System::read_file($templatefile);
-		&form_logs();
+		&form_debmatic();
 	}
-	elsif ($q->{form} eq "settings") {
+	else {
 		my $templatefile = "$lbptemplatedir/general_settings.html";
 		$template = LoxBerry::System::read_file($templatefile);
 		&form_settings();
 	}
-	else {
-		my $templatefile = "$lbptemplatedir/measurements_settings.html";
-		$template = LoxBerry::System::read_file($templatefile);
-		&form_measurements();
-       	}
 	
 }
 
@@ -107,25 +98,23 @@ if( $q->{ajax} ) {
 exit;
 
 ##########################################################################
-# Form: Atlas
+# Form: Debmatic
 ##########################################################################
 
-sub form_atlas
+sub form_debmatic
 {
+
 	# Prepare template
 	&preparetemplate();
 
-	return();
-}
-
-##########################################################################
-# Form: Calibration
-##########################################################################
-
-sub form_measurements
-{
-	# Prepare template
-	&preparetemplate();
+	# Homematic WebUI
+	my $host = "$ENV{SERVER_NAME}";
+	my $hmport = qx ( cat /etc/debmatic/webui.conf | grep -e "^var.debmatic_webui_http_port.*" | cut -d "=" -f2 | xargs );
+	chomp $hmport;
+	my $nrport = qx ( cat /mnt/dietpi_userdata/node-red/settings.js | grep -e "^\\s*uiPort:.*" | sed 's/[^0-9]*//g' );
+	chomp $nrport;
+	$templateout->param("HMWEBUILINK", "http://$host:$hmport");
+	$templateout->param("NRWEBUILINK", "http://$host:$nrport");
 
 	return();
 }
@@ -143,21 +132,6 @@ sub form_settings
 	return();
 }
 
-
-##########################################################################
-# Form: Log
-##########################################################################
-
-sub form_logs
-{
-
-	# Prepare template
-	&preparetemplate();
-
-	$templateout->param("LOGLIST", LoxBerry::Web::loglist_html());
-
-	return();
-}
 
 ##########################################################################
 # Print Form
@@ -183,20 +157,17 @@ sub preparetemplate
 	# Navbar
 	our %navbar;
 
-	$navbar{10}{Name} = "$L{'COMMON.LABEL_MEASUREMENTS'}";
-	$navbar{10}{URL} = 'index.cgi?form=measurements';
-	$navbar{10}{active} = 1 if $q->{form} eq "measurements";
+	$navbar{10}{Name} = "$L{'COMMON.LABEL_DEBMATIC'}";
+	$navbar{10}{URL} = 'index.cgi?form=debmatic';
+	$navbar{10}{active} = 1 if $q->{form} eq "debmatic";
 
-	$navbar{20}{Name} = "$L{'COMMON.LABEL_ATLAS'}";
-	$navbar{20}{URL} = 'index.cgi?form=atlas';
-	$navbar{20}{active} = 1 if $q->{form} eq "atlas";
-	
-	$navbar{30}{Name} = "$L{'COMMON.LABEL_SETTINGS'}";
-	$navbar{30}{URL} = 'index.cgi?form=settings';
-	$navbar{30}{active} = 1 if $q->{form} eq "settings";
+	$navbar{20}{Name} = "$L{'COMMON.LABEL_SETTINGS'}";
+	$navbar{20}{URL} = 'index.cgi?form=settings';
+	$navbar{20}{active} = 1 if $q->{form} eq "settings";
 	
 	$navbar{98}{Name} = "$L{'COMMON.LABEL_LOGS'}";
-	$navbar{98}{URL} = 'index.cgi?form=logs';
+	$navbar{98}{URL} = "/admin/system/tools/logfile.cgi?logfile=$lbplogdir/hmserver.log&header=html&format=template";
+	$navbar{98}{target} = "_blank";
 	$navbar{98}{active} = 1 if $q->{form} eq "logs";
 
 	return();
@@ -208,7 +179,7 @@ sub printtemplate
 	# Print out Template
 	LoxBerry::Web::lbheader($L{'COMMON.LABEL_PLUGINTITLE'} . " V$version", "https://loxwiki.atlassian.net/wiki/spaces/LOXBERRY/pages/1254687237/LoxPoolManager", "");
 	# Print your plugins notifications with name daemon.
-	print LoxBerry::Log::get_notifications_html($lbpplugindir, 'PoolManager');
+	print LoxBerry::Log::get_notifications_html($lbpplugindir, 'DebMatic');
 	print $templateout->output();
 	LoxBerry::Web::lbfooter();
 	

@@ -1,0 +1,196 @@
+<style>
+.datahidden {
+	display:none;
+}
+
+.tiny {
+	font-size:70%;
+}
+
+.small {
+	font-size:80%;
+}
+
+.middle {
+	font-size:120%;
+}
+
+.big {
+	font-size:150%;
+}
+
+.large {
+	font-size:200%;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.grayed {
+	color: gray;
+}
+
+.center {
+	text-align: center;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	grid-column-gap: 15px;
+	grid-row-gap: 15px;
+	text-shadow: none;
+}
+
+.box { 
+	border: 1px solid black;
+	border-radius: 5px 5px 5px 5px;
+	padding: 5px;
+}
+
+.boxtitle {
+	background-color: #6dac20;
+	color: white;
+	text-shadow: 1px 1px 2px black;
+	border-radius: 5px 5px 5px 5px;
+	padding: 5px;
+	vertical-align: middle;
+}
+
+.boxrow {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+	align-items: center;
+	padding: 0;
+	margin: 0;
+}
+
+.boxitem {
+	padding: 5px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.servicestatus {
+	display: grid;
+	grid-template-columns: auto auto auto auto;
+	grid-template-rows: 1fr;
+	gap: 0px 10px;
+	justify-content: center;
+	justify-items: center;
+	align-items: center;
+	text-shadow: none;
+}
+
+.margin {
+	margin: 10px;
+}
+
+.status {
+	padding: 7px;
+	box-sizing: border-box;
+	border-radius: 5px 5px 5px 5px;
+	background: #dfdfdf;
+	border: 1px solid #7E7E7E;
+	width: 170px;
+	text-align: center;
+}
+
+.ui-popup-container
+{
+	width:  50%;
+	height: 80%;
+}
+
+</style>
+
+<center>
+<table border="0" width="500px">
+<tr>
+	<td width="250px" align="center">
+	<a href="<TMPL_VAR "HMWEBUILINK">" target="_blank"> <img src="./images/homematic.png" height="128px"> </a>
+	</td>
+	<td width="250px" align="center">
+	<a href="<TMPL_VAR "NRWEBUILINK">" target="_blank"> <img src="./images/node-red.png" height="128px"> </a>
+	</td>
+</tr>
+<tr>
+	<td width="250px" align="center">
+	<a href="<TMPL_VAR "HMWEBUILINK">" target="_blank"> <TMPL_VAR "DEBMATIC.LABEL_HOMEMATICWEBUI"> </a>
+	</td>
+	<td width="250px" align="center">
+	<a href="<TMPL_VAR "NRWEBUILINK">" target="_blank"> <TMPL_VAR "DEBMATIC.LABEL_NODEREDWEBUI"> </a>
+	</td>
+</tr>
+</table>
+</center>
+
+<br>
+
+<div class="grid">
+	<div>
+		<h2 class="boxtitle ui-title">
+			<span style="vertical-align:middle"><img src="./images/hardware_title_32.png"></span>
+			<TMPL_VAR "DEBMATIC.LABEL_DEBMATICINFO">
+		</h2>
+		<div class="box">
+			<div class="boxrow">
+				<div class="boxitem" style="width:500px">
+					<div id="debmaticinfo">
+						<TMPL_VAR "COMMON.HINT_UNKNOWN">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<h2 class="boxtitle ui-title">
+			<span style="vertical-align:middle"><img src="./images/hardware_title_32.png"></span>
+			<TMPL_VAR "DEBMATIC.LABEL_SERVICES">
+		</h2>
+		<div class="box">
+			<div class="boxrow">
+				<div class="boxitem">
+					<a href="#" onclick="servicerestart(); return false;" id="btnservicerestart" class="ui-btn ui-btn-inline ui-mini ui-btn-icon-left ui-icon-check ui-corner-all"><TMPL_VAR "COMMON.BUTTON_RESTART"></a>
+					</div>
+					<div class="boxitem">
+					<a href="#" onclick="servicestop(); return false;" id="btnservicestop" class="ui-btn ui-btn-inline ui-mini ui-btn-icon-left ui-icon-delete ui-corner-all"><TMPL_VAR "COMMON.BUTTON_STOP"></a>
+				</div>
+			</div>
+			<div class="boxrow">
+				<div class="boxitem" style="width:500px">
+					<table style="min-width:200px; width:100%" width="100%" id="pidtable" class="ui-responsive table-stripe ui-body-b">
+					<tr>
+						<td style="text-align:left;">WebUI</td>
+						<td style="text-align:center;"><div id="iconwebui"><img src="./images/unknown_20.png"></div></td>
+					</tr>
+					<tr>
+						<td style="text-align:left;">RFD</td>
+						<td style="text-align:center;"><div id="iconrfd"><img src="./images/unknown_20.png"></div></td>
+					</tr>
+					<tr>
+						<td style="text-align:left;">HMIPServer</td>
+						<td style="text-align:center;"><div id="iconhmserver"><img src="./images/unknown_20.png"></div></td>
+					</tr>
+					<tr>
+						<td style="text-align:left;">Multimacd</td>
+						<td style="text-align:center;"><div id="iconmultimacd"><img src="./images/unknown_20.png"></div></td>
+					</tr>
+					<tr>
+						<td style="text-align:left;">ReGaHss</td>
+						<td style="text-align:center;"><div id="iconregahss"><img src="./images/unknown_20.png"></div></td>
+					</tr>
+					<tr>
+						<td style="text-align:left;">CUxD</td>
+						<td style="text-align:center;"><div id="iconcuxd"><img src="./images/unknown_20.png"></div></td>
+					</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+

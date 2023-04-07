@@ -116,32 +116,24 @@
 		<div class="box">
 			<div class="boxrow">
 					<div class="boxitem small" style="width: 15%">
-						<TMPL_VAR SETTINGS.LABEL_STATUSCYCLE>	
+						<TMPL_VAR SETTINGS.LABEL_HMWEBUI>
 					</div>
 					<div class="boxitem" style="width:50%">
-						<input type="text" id="statuscycle_settings" data-mini="true" value="" placeholder="<TMPL_VAR SETTINGS.LABEL_STATUSCYCLE_HINT>">
+						<input type="text" id="hmport" data-mini="true" value="" placeholder="<TMPL_VAR SETTINGS.LABEL_HMWEBUI_HINT>">
 					</div>
 			</div>
 			<div class="boxrow">
 					<div class="boxitem small" style="width: 15%">
-						<TMPL_VAR SETTINGS.LABEL_VALUESCYCLE>	
+						<TMPL_VAR SETTINGS.LABEL_NRWEBUI>
 					</div>
 					<div class="boxitem" style="width:50%">
-						<input type="text" id="valuescycle_settings" data-mini="true" value="" placeholder="<TMPL_VAR SETTINGS.LABEL_VALUESCYCLE_HINT>">
-					</div>
-			</div>
-			<div class="boxrow">
-					<div class="boxitem small" style="width: 15%">
-						<TMPL_VAR SETTINGS.LABEL_MQTTTOPIC>	
-					</div>
-					<div class="boxitem" style="width:50%">
-						<input type="text" id="topic_settings" data-mini="true" value="" placeholder="<TMPL_VAR SETTINGS.LABEL_MQTTTOPIC_HINT>">
+						<input type="text" id="nrport" data-mini="true" value="" placeholder="<TMPL_VAR SETTINGS.LABEL_NRWEBUI_HINT>">
 					</div>
 			</div>
 			<br><br>
 			<div class="boxrow">
 					<div class="boxitem small" style="width: 90%">
-						<a href="#" onclick="save_settings(); return false;" class="ui-btn ui-btn-inline ui-mini ui-btn-icon-left ui-icon-check ui-corner-all"><TMPL_VAR "COMMON.BUTTON_SAVE"></a>
+						<a href="#" onclick="saveconfig(); return false;" id="btnsave" class="ui-btn ui-btn-inline ui-mini ui-btn-icon-left ui-icon-check ui-corner-all"><TMPL_VAR "COMMON.BUTTON_SAVE"></a>
 					</div>
 			</div>
 			<div class="boxrow">

@@ -156,7 +156,6 @@ echo "<INFO> Installing Node-Red..."
 /boot/dietpi/dietpi-software install 122
 
 echo "<INFO> Installing Node-RED Nodes for the Homematic CCU..."
-yes | npm install -g node-red-contrib-ccu
-
+sudo -u nodered yes | npm --prefix mnt/dietpi_userdata/node-red install node-red-contrib-ccu
 
 exit 0
