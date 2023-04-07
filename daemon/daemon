@@ -2,7 +2,7 @@
 
 PLUGINNAME=REPLACELBPPLUGINDIR
 
-if [ -e "$LBPCONFIG/debmatic_installed" ]; then
+if [ -e "$LBPCONFIG/$PLUGINNAME/debmatic_installed" ]; then
 	systemctl stop debmatic-ssdpd
 	systemctl disable debmatic-ssdpd
 	exit 0
