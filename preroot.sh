@@ -22,6 +22,11 @@ PBIN=$LBPBIN/$PDIR
 
 echo "<INFO> Installation as root user started."
 
+echo "<INFO> De-Installing Lighttpd Mod for Debmatic..."
+if [ -x "/usr/sbin/lighty-disable-mod" ]; then
+	/usr/sbin/lighty-disable-mod debmatic
+fi
+
 # Check if we are on a dietPi System
 echo "<INFO> Checking base distribution. We need DietPi..."
 if [ -e /boot/dietpi/.hw_model ]; then
@@ -30,3 +35,5 @@ else
 	echo "<FAIL> This Plugin needs a LoxBerry based on DietPi. DietPi is used from LoxBerry 3.0 on. You cannot install this plugin on a LoxBerry, which was upgraded from LoxBerry 2.0 or earlier."
 	exit 2
 fi
+
+exit 0
