@@ -139,6 +139,9 @@ else
 fi
 
 echo "<INFO> Installing Debmatic..."
+if [ -x "/usr/sbin/lighty-disable-mod" ]; then
+	/usr/sbin/lighty-disable-mod debmatic
+fi
 apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install debmatic cuxd xml-api
 
 echo "<INFO> Disabling Debmatic SSDPD Service (LoxBerry has it's own service)..."
