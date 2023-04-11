@@ -138,20 +138,27 @@ else
 
 fi
 
-echo "<INFO> Installing Debmatic..."
+echo "<INFO> Installing Lighttpd..."
 if [ -x "/usr/sbin/lighty-disable-mod" ]; then
 	/usr/sbin/lighty-disable-mod debmatic
 fi
-apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install debmatic cuxd xml-api
+apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install lighttpd
+systemctl stop lighttpd
+
+echo "<INFO> Changing Lighttpd Port to 8081"
+/bin/sed -i 's#^server\.port\(\s*\)=\(.*\)$#server\.port\1= 8081#' /etc/lighttpd/lighttpd.conf
+/bin/sed -i 's#^var\.debmatic_webui_http_port\(\s*\)=\(.*\)$#var\.debmatic_webui_http_port\1= 8081#' /etc/debmatic/webui.conf
+
+echo "<INFO> Installing Debmatic..."
+apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install debmatic
 
 echo "<INFO> Disabling Debmatic SSDPD Service (LoxBerry has it's own service)..."
 systemctl stop debmatic-ssdpd
 systemctl disable debmatic-ssdpd
+
+echo "<INFO> Installing AddOns..."
+apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install cuxd xml-api
 systemctl stop debmatic
 systemctl stop lighttpd
-
-echo "<INFO> Changing Homematic WebUI Port to 8081"
-/bin/sed -i 's#^server\.port\(\s*\)=\(.*\)$#server\.port\1= 8081#' /etc/lighttpd/lighttpd.conf
-/bin/sed -i 's#^var\.debmatic_webui_http_port\(\s*\)=\(.*\)$#var\.debmatic_webui_http_port\1= 8081#' /etc/debmatic/webui.conf
 
 exit 0
