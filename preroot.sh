@@ -22,11 +22,6 @@ PBIN=$LBPBIN/$PDIR
 
 echo "<INFO> Installation as root user started."
 
-echo "<INFO> De-Installing Lighttpd Mod for Debmatic..."
-if [ -x "/usr/sbin/lighty-disable-mod" ]; then
-	/usr/sbin/lighty-disable-mod debmatic
-fi
-
 # Check if we are on a dietPi System
 echo "<INFO> Checking base distribution. We need DietPi..."
 if [ -e /boot/dietpi/.hw_model ]; then
