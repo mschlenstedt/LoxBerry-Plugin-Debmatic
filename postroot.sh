@@ -220,4 +220,7 @@ jq '.Users.loxberry = {
 }' /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg
 mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
 
+systemctl daemon-reload
+systemctl enable ccu-jack.service
+
 exit 0
