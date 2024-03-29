@@ -113,8 +113,11 @@ sub form_debmatic
 	chomp $hmport;
 	my $nrport = qx ( cat /mnt/dietpi_userdata/node-red/settings.js | grep -e "^\\s*uiPort:.*" | sed 's/[^0-9]*//g' );
 	chomp $nrport;
+	my $ccujport = qx ( cat /etc/config/addons/ccu-jack.cfg | jq -r ".HTTP.Port" );
+	chomp $ccujport;
 	$templateout->param("HMWEBUILINK", "http://$host:$hmport");
 	$templateout->param("NRWEBUILINK", "http://$host:$nrport");
+	$templateout->param("CCUJWEBUILINK", "http://$host:$ccujport/ui");
 
 	return();
 }

@@ -24,9 +24,10 @@ my $q = $cgi->Vars;
 
 if( $q->{action} eq "servicerestart" ) {
 	my $exitcode1 = execute ("sudo systemctl restart debmatic");
-	my $exitcode2 = execute ("sudo systemctl restart node-red");
+	my $exitcode2 = execute ("sudo systemctl restart ccu-jack");
+	my $exitcode3 = execute ("sudo systemctl restart node-red");
 	sleep(3);
-	if ($exitcode1 + $exitcode2 eq "0") {
+	if ($exitcode1 + $exitcode2 + $exitcode3 eq "0") {
 		$response = encode_json( { status => "0" } );
 	} else {
 		$response = encode_json( { status => "1" } );
@@ -35,9 +36,10 @@ if( $q->{action} eq "servicerestart" ) {
 
 if( $q->{action} eq "servicestop" ) {
 	my $exitcode1 = execute ("sudo systemctl stop debmatic");
-	my $exitcode2 = execute ("sudo systemctl stop node-red");
+	my $exitcode2 = execute ("sudo systemctl stop ccu-jack");
+	my $exitcode3 = execute ("sudo systemctl stop node-red");
 	sleep(3);
-	if ($exitcode1 + $exitcode2 eq "0") {
+	if ($exitcode1 + $exitcode2 + $exitcode3 eq "0") {
 		$response = encode_json( { status => "0" } );
 	} else {
 		$response = encode_json( { status => "1" } );
@@ -55,6 +57,7 @@ if( $q->{action} eq "servicestatus" ) {
 	($pids{'cuxd'}, $output) = execute ("pgrep -f /usr/local/addons/cuxd/cux");
 	($pids{'regahss'}, $output) = execute ("pgrep -f /bin/ReGaHss");
 	($pids{'nodered'}, $output) = execute ("pgrep -f node-red");
+	($pids{'ccujack'}, $output) = execute ("pgrep -f ccu-jack");
 	$response{'status'} = \%pids;
 	$response = encode_json( \%response );
 }
@@ -74,6 +77,12 @@ if( $q->{action} eq "getconfig" ) {
 	chomp $hmport;
 	my $nrport = qx ( cat /mnt/dietpi_userdata/node-red/settings.js | grep -e "^\\s*uiPort:.*" | sed 's/[^0-9]*//g' );
 	chomp $nrport;
+	my $ccujport = qx ( cat /etc/config/addons/ccu-jack.cfg | jq -r ".HTTP.Port" );
+	chomp $ccujport;
+	my $ccujmqtt = qx ( cat /etc/config/addons/ccu-jack.cfg | jq -r ".MQTT.Port" );
+	chomp $ccujmqtt;
+	my $ccujmqtttls = qx ( cat /etc/config/addons/ccu-jack.cfg | jq -r ".MQTT.PortTLS" );
+	chomp $ccujmqtttls;
 	my $hb_rf_eth_ip = qx ( cat /etc/default/hb_rf_eth | grep -e "^HB_RF_ETH_ADDRESS.*" | cut -d "=" -f2 | xargs );
 	chomp $hb_rf_eth_ip;
 	if ( $hb_rf_eth_ip ne "" ) {
@@ -84,20 +93,32 @@ if( $q->{action} eq "getconfig" ) {
 	}
 	$response{'hmport'} = "$hmport";
 	$response{'nrport'} = "$nrport";
+	$response{'ccujport'} = "$ccujport";
+	$response{'ccujmqtt'} = "$ccujmqtt";
+	$response{'ccujmqtttls'} = "$ccujmqtttls";
 	$response = encode_json( \%response );
 }
 
 if( $q->{action} eq "saveconfig" ) {
 	my $hmport = $q->{"hmport"};
 	my $nrport = $q->{"nrport"};
+	my $ccujport = $q->{"ccujport"};
+	my $ccujmqtt = $q->{"ccujmqtt"};
+	my $ccujmqtttls = $q->{"ccujmqtttls"};
 	my $hbrfethip= $q->{"hbrfethip"};
 	my $hbrfethenable= $q->{"hbrfethenable"};
 	$hmport = "8081" if !$hmport;
 	$nrport = "1880" if !$nrport;
-	execute ("sudo $lbpbindir/saveconfig.sh $hmport $nrport $hbrfethenable $hbrfethip ");
+	$ccujport = "2121" if !$ccujport;
+	$ccujmqtt = "41883" if !$ccujmqtt;
+	$ccujmqtttls = "48883" if !$ccujmqtttls;
+	execute ("sudo $lbpbindir/saveconfig.sh $hmport $nrport $ccujport $ccujmqtt $ccujmqtttls $hbrfethenable $hbrfethip ");
 	my %response;
 	$response{'hmport'} = "$hmport";
 	$response{'nrport'} = "$nrport";
+	$response{'ccujport'} = "$ccujport";
+	$response{'ccujmqtt'} = "$ccujmqtt";
+	$response{'ccujmqtttls'} = "$ccujmqtttls";
 	$response = encode_json( \%response );
 }
 

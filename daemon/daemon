@@ -5,6 +5,25 @@ PLUGINNAME=REPLACELBPPLUGINDIR
 if [ -e "$LBPCONFIG/$PLUGINNAME/debmatic_installed" ]; then
 	systemctl stop debmatic-ssdpd
 	systemctl disable debmatic-ssdpd
+
+	# CCU-Jack
+	systemctl stop ccu-jack
+	brokerhost=`jq -r ".Mqtt.Brokerhost" $LBSCONFIG/general.json`
+	brokeruser=`jq -r ".Mqtt.Brokeruser" $LBSCONFIG/general.json`
+	brokerpass=`jq -r ".Mqtt.Brokerpass" $LBSCONFIG/general.json`
+	brokerport=`jq -r ".Mqtt.Brokerport" $LBSCONFIG/general.json`
+	hostname=`hostname`
+	jq ".MQTT.Bridge.Address = \"$brokerhost\"" /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg 
+	mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
+	jq ".MQTT.Bridge.Port = $brokerport" /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg 
+	mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
+	jq ".MQTT.Bridge.Username = \"$brokeruser\"" /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg 
+	mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
+	jq ".MQTT.Bridge.Password = \"$brokerpass\"" /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg 
+	mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
+	jq ".MQTT.Bridge.ClientID = \"$hostname\"" /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg 
+	mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
+	systemctl start ccu-jack
 	exit 0
 fi
 

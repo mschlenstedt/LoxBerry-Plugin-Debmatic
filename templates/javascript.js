@@ -27,6 +27,7 @@ function servicestatus(update) {
 		$("#iconregahss").html("<img src='./images/unknown_20.png'>");
 		$("#iconcuxd").html("<img src='./images/unknown_20.png'>");
 		$("#iconnodered").html("<img src='./images/unknown_20.png'>");
+		$("#iconccuj").html("<img src='./images/unknown_20.png'>");
 	}
 
 	$.ajax( { 
@@ -45,6 +46,7 @@ function servicestatus(update) {
 		$("#iconregahss").html("<img src='./images/unknown_20.png'>");
 		$("#iconcuxd").html("<img src='./images/unknown_20.png'>");
 		$("#iconnodered").html("<img src='./images/unknown_20.png'>");
+		$("#iconccuj").html("<img src='./images/unknown_20.png'>");
 	})
 	.done(function( data ) {
 		console.log( "Servicestatus Success", data );
@@ -83,6 +85,11 @@ function servicestatus(update) {
 		} else {
 			$("#iconnodered").html("<img src='./images/error_20.png'>");
 		}
+		if (data.status.ccujack == "0") {
+			$("#iconccuj").html("<img src='./images/check_20.png'>");
+		} else {
+			$("#iconccuj").html("<img src='./images/error_20.png'>");
+		}
 	})
 	.always(function( data ) {
 		console.log( "Servicestatus Finished", data );
@@ -101,6 +108,7 @@ function servicerestart() {
 	$("#iconregahss").html("<img src='./images/unknown_20.png'>");
 	$("#iconcuxd").html("<img src='./images/unknown_20.png'>");
 	$("#iconnodered").html("<img src='./images/unknown_20.png'>");
+	$("#iconccuj").html("<img src='./images/unknown_20.png'>");
 	$("#btnservicerestart").addClass("ui-state-disabled");
 	$("#btnservicestop").addClass("ui-state-disabled");
 	$.ajax( { 
@@ -137,6 +145,7 @@ function servicestop() {
 	$("#iconregahss").html("<img src='./images/unknown_20.png'>");
 	$("#iconcuxd").html("<img src='./images/unknown_20.png'>");
 	$("#iconnodered").html("<img src='./images/unknown_20.png'>");
+	$("#iconccuj").html("<img src='./images/unknown_20.png'>");
 	$("#btnservicerestart").addClass("ui-state-disabled");
 	$("#btnservicestop").addClass("ui-state-disabled");
 	$.ajax( { 
@@ -210,6 +219,9 @@ function getconfig() {
 		// Settings
 		$("#hmport").val(data.hmport);
 		$("#nrport").val(data.nrport);
+		$("#ccujport").val(data.ccujport);
+		$("#ccujmqtt").val(data.ccujmqtt);
+		$("#ccujmqtttls").val(data.ccujmqtttls);
 		$("#hbrfethip").val(data.hbrfethip);
 		if ( data.hbrfethenable == "1" ) {
 			$("#hbrfethenable").prop('checked', true).flipswitch('refresh');
@@ -238,6 +250,9 @@ function saveconfig() {
 			action: 'saveconfig',
 			hmport: $("#hmport").val(),
 			nrport: $("#nrport").val(),
+			ccujport: $("#ccujport").val(),
+			ccujmqtt: $("#ccujmqtt").val(),
+			ccujmqtttls: $("#ccujmqtttls").val(),
 			hbrfethip: $("#hbrfethip").val(),
 			hbrfethenable: $("#hbrfethenable").prop("checked")
 		}
@@ -250,6 +265,9 @@ function saveconfig() {
 		console.log( "saveconfig Success", data );
 		$("#hmport").val(data.hmport);
 		$("#nrport").val(data.nrport);
+		$("#ccujport").val(data.ccujport);
+		$("#ccujmqtt").val(data.ccujmqtt);
+		$("#ccujmqtttls").val(data.ccujmqtttls);
 		$("#savinghint_settings").attr("style", "color:green").html("<TMPL_VAR "COMMON.HINT_SAVING_SUCCESS">" + ".");
 	})
 	.always(function( data ) {
