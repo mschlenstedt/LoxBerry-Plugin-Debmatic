@@ -8,4 +8,12 @@ rm /usr/share/keyrings/debmatic.gpg
 rm /etc/apt/sources.list.d/debmatic.list
 apt-get -y update
 
+echo "Remove CCU-Jack"
+systemctl stop ccu-jack.service
+systemctl disable ccu-jack.service
+systemctl daemon-reload
+rm -r /usr/local/addons/ccu-jack/
+rm -f /etc/config/addons/www/ccu-jack/
+rm /etc/config/addons/ccu-jack.cfg
+
 exit 0
