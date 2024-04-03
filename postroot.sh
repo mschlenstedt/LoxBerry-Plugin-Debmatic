@@ -212,7 +212,7 @@ jq ".MQTT.Bridge.Password = \"$brokerpass\"" /etc/config/addons/ccu-jack.cfg > /
 mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
 jq ".MQTT.Bridge.ClientID = \"$hostname\"" /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg 
 mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
-if [ UPGRADE -eq 0 ]; then
+if [ UPGRADE = 0 ]; then
 	jq '.Users.loxberry = {
 		"Identifier": "loxberry",
 		"Active": true,
