@@ -164,15 +164,24 @@ systemctl stop debmatic
 systemctl stop lighttpd
 
 echo "<INFO> Installing CCU-Jack..."
+UPGRADE=0
+if [ -e /etc/config/addons/ccu-jack.cfg ]; then # Upgrade!
+	UPGRADE=1
+fi
+
+# Extracting sources - ADD GIT DOWNLOAD HERE AS SOON AS IT IS AVAILABLE
+systemctl stop ccu-jack
 tar -C / -x -v -z -f $PDATA/ccu-jack-debmatic-rp2+3.tar.gz
+
+# Check arch
 . /boot/dietpi/.hw_model
 mv /usr/local/addons/ccu-jack/ccu-jack /usr/local/addons/ccu-jack/ccu-jack.orig
 if [ $G_HW_ARCH -eq 1 ]; then # Pi0 und Pi1 or armv6l
 	echo "<INFO> Installing CCU-Jack for armv6l."
-	cp $PDATA/ccu-jack.pi0+1 /usr/local/addons/ccu-jack/ccu-jack
+	cp $PDATA/ccu-jack.pi1 /usr/local/addons/ccu-jack/ccu-jack
 elif [ $G_HW_ARCH -eq 2 ]; then # Pi2+3 or armv7l
 	echo "<INFO> Installing CCU-Jack for armv7l."
-	cp $PDATA/ccu-jack.rp2+3 /usr/local/addons/ccu-jack/ccu-jack
+	cp $PDATA/ccu-jack.rp2 /usr/local/addons/ccu-jack/ccu-jack
 elif [ $G_HW_ARCH -eq 3 ]; then # Pi4+5 or arm64
 	echo "<INFO> Installing CCU-Jack for arm64."
 	cp $PDATA/ccu-jack.rp4 /usr/local/addons/ccu-jack/ccu-jack
@@ -183,13 +192,14 @@ else
 	echo "<ERROR> Your Architecture seems not to be supported by CCU-Jack. CCU Jack will not work."
 fi
 chmod +x /usr/local/addons/ccu-jack/ccu-jack
-systemctl stop ccu-jack
 
+# CHange default config
 brokerhost=`jq -r ".Mqtt.Brokerhost" $LBSCONFIG/general.json`
 brokeruser=`jq -r ".Mqtt.Brokeruser" $LBSCONFIG/general.json`
 brokerpass=`jq -r ".Mqtt.Brokerpass" $LBSCONFIG/general.json`
 brokerport=`jq -r ".Mqtt.Brokerport" $LBSCONFIG/general.json`
 hostname=`hostname`
+rm /tmp/ccu-jack.cfg
 jq ".MQTT.Bridge.Enable = true" /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg 
 mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
 jq ".MQTT.Bridge.Address = \"$brokerhost\"" /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg 
@@ -202,24 +212,49 @@ jq ".MQTT.Bridge.Password = \"$brokerpass\"" /etc/config/addons/ccu-jack.cfg > /
 mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
 jq ".MQTT.Bridge.ClientID = \"$hostname\"" /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg 
 mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
-jq '.Users.loxberry = {
-	"Identifier": "loxberry",
-	"Active": true,
-	"Description": "",
-	"Password": "",
-	"EncryptedPassword": "$2a$04$vJdusYLi51FPdl07Q4ASLOAA0Y5CeH/psb92NU.aaWNKBJ5HgbzcO",
-	"Permissions": {
-		"all": {
-			"Identifier": "all",
-			"Description": "All permissions",
-			"Endpoint": 3,
-			"Kind": 7,
-			"PVFilter": ""
+if [ UPGRADE -eq 0 ]; then
+	jq '.Users.loxberry = {
+		"Identifier": "loxberry",
+		"Active": true,
+		"Description": "",
+		"Password": "",
+		"EncryptedPassword": "$2a$04$vJdusYLi51FPdl07Q4ASLOAA0Y5CeH/psb92NU.aaWNKBJ5HgbzcO",
+		"Permissions": {
+			"all": {
+				"Identifier": "all",
+				"Description": "All permissions",
+				"Endpoint": 3,
+				"Kind": 7,
+				"PVFilter": ""
+			}
 		}
+	}' /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg
+	mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
+	jq '.MQTT.Bridge.Incoming = [
+	{
+		"Pattern": "+/set/#",
+		"LocalPrefix": "",
+		"RemotePrefix": "ccujack/",
+		"QoS": 0
+	},
+	{
+		"Pattern": "+/get/#",
+		"LocalPrefix": "",
+		"RemotePrefix": "ccujack/",
+		"QoS": 0
 	}
-}' /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg
-mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
-
+	]' /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg
+	mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
+	jq '.MQTT.Bridge.Outgoing = [
+	{
+		"Pattern": "+/status/#",
+		"LocalPrefix": "",
+		"RemotePrefix": "ccujack/",
+		"QoS": 0
+	}
+	]' /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg
+	mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
+fi
 systemctl daemon-reload
 systemctl enable ccu-jack.service
 
