@@ -167,6 +167,7 @@ echo "<INFO> Installing CCU-Jack..."
 UPGRADE=0
 if [ -e /etc/config/addons/ccu-jack.cfg ]; then # Upgrade!
 	UPGRADE=1
+	cp /etc/config/addons/ccu-jack.cfg /etc/config/addons/ccu-jack.bkp
 fi
 
 # Extracting sources - ADD GIT DOWNLOAD HERE AS SOON AS IT IS AVAILABLE
@@ -243,6 +244,9 @@ if [ $UPGRADE -eq 0 ]; then
 
 	# Remove binary - will be installed in the next step
 	mv /usr/local/addons/ccu-jack/ccu-jack /usr/local/addons/ccu-jack/ccu-jack.orig
+else
+	echo "<INFO> This seems to be an existing installation. Recover CCU-Jack config."
+	cp /etc/config/addons/ccu-jack.bkp /etc/config/addons/ccu-jack.cfg
 fi
 
 # Check arch and install
