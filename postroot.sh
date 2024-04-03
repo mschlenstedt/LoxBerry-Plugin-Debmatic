@@ -22,6 +22,12 @@ PBIN=$LBPBIN/$PDIR
 
 echo "<INFO> Installation as root user started."
 
+UPDATE=0
+if dpkg -s debmatic > /dev/null 2>&1; then
+	echo "<INFO> Found an existing Debmatic installation. This seems to be an update."
+	UPDATE=1
+fi
+
 echo "<INFO> Adding Debmatic Repository..."
 curl -sL https://www.debmatic.de/debmatic/public.key | gpg --dearmor | tee /usr/share/keyrings/debmatic.gpg >/dev/null
 echo "deb [signed-by=/usr/share/keyrings/debmatic.gpg] https://www.debmatic.de/debmatic stable main" | tee /etc/apt/sources.list.d/debmatic.list
@@ -55,15 +61,12 @@ if [ $G_HW_MODEL -lt 10 ]; then
 
 	echo "<INFO> We are on a Raspberry. Add special options and packages for Raspberry..."
 
-	echo "<INFO> Installing PIVCCU Modules..."
-	apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install pivccu-modules-raspberrypi
-
-	#
-	#
-	# Should this be pivccu-devicetree-raspberrypi ????
-	#
-	#
-
+	if [ $UPDATE -eq 0 ]; then
+		echo "<INFO> Installing PIVCCU Modules..."
+		apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install pivccu-modules-raspberrypi
+	else
+		echo "<INFO> Do not install PIVCCU Modules once again because this is an Update..."
+	fi
 	echo "<INFO> Reconfigure Bluetooth"
 	if ! cat /boot/config.txt | grep -qe "^dtoverlay=pi3-disable-bt" && ! cat /boot/config.txt | grep -qe "^dtoverlay=pi3-miniuart-bt"; then
 		echo "<INFO> Adding dtoverlay=pi3-miniuart-bt to /boot/config.txt"
