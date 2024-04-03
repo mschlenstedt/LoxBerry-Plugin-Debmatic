@@ -24,18 +24,15 @@ if [ -e "$LBPCONFIG/$PLUGINNAME/debmatic_installed" ]; then
 	jq ".MQTT.Bridge.ClientID = \"$hostname\"" /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg 
 	mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
 	systemctl start ccu-jack
-	exit 0
+else
+	echo "<INFO> Installing Node-Red..."
+	/boot/dietpi/dietpi-software install 122
+
+	echo "<INFO> Installing Node-RED Nodes for the Homematic CCU..."
+	sudo -u nodered yes | npm --prefix /mnt/dietpi_userdata/node-red install node-red-contrib-ccu
+
+	touch $LBPCONFIG/$PLUGINNAME/debmatic_installed
+	reboot
 fi
-
-echo "<INFO> Installing Node-Red..."
-/boot/dietpi/dietpi-software install 122
-
-echo "<INFO> Installing Node-RED Nodes for the Homematic CCU..."
-sudo -u nodered yes | npm --prefix /mnt/dietpi_userdata/node-red install node-red-contrib-ccu
-
-touch $LBPCONFIG/$PLUGINNAME/debmatic_installed
-
-#rm $LBHOMEDIR/system/daemons/plugins/$0
-#reboot
 
 exit 0
