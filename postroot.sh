@@ -177,16 +177,16 @@ tar -C / -x -v -z -f $PDATA/ccu-jack-debmatic-rp2+3.tar.gz
 . /boot/dietpi/.hw_model
 mv /usr/local/addons/ccu-jack/ccu-jack /usr/local/addons/ccu-jack/ccu-jack.orig
 if [ $G_HW_ARCH -eq 1 ]; then # Pi0 und Pi1 or armv6l
-	echo "<INFO> Installing CCU-Jack for armv6l."
+	echo "<INFO> Installing CCU-Jack binary for armv6l."
 	cp $PDATA/ccu-jack.pi1 /usr/local/addons/ccu-jack/ccu-jack
 elif [ $G_HW_ARCH -eq 2 ]; then # Pi2+3 or armv7l
-	echo "<INFO> Installing CCU-Jack for armv7l."
+	echo "<INFO> Installing CCU-Jack binary for armv7l."
 	cp $PDATA/ccu-jack.rp2 /usr/local/addons/ccu-jack/ccu-jack
 elif [ $G_HW_ARCH -eq 3 ]; then # Pi4+5 or arm64
-	echo "<INFO> Installing CCU-Jack for arm64."
+	echo "<INFO> Installing CCU-Jack binary for arm64."
 	cp $PDATA/ccu-jack.rp4 /usr/local/addons/ccu-jack/ccu-jack
 elif [ $G_HW_ARCH -eq 10 ]; then # x64
-	echo "<INFO> Installing CCU-Jack for x64."
+	echo "<INFO> Installing CCU-Jack binary for x64."
 	cp $PDATA/ccu-jack.x64 /usr/local/addons/ccu-jack/ccu-jack
 else
 	echo "<ERROR> Your Architecture seems not to be supported by CCU-Jack. CCU Jack will not work."
@@ -194,6 +194,7 @@ fi
 chmod +x /usr/local/addons/ccu-jack/ccu-jack
 
 # CHange default config
+echo "<INFO> Adding MQTT settings for CCU-Jack."
 brokerhost=`jq -r ".Mqtt.Brokerhost" $LBSCONFIG/general.json`
 brokeruser=`jq -r ".Mqtt.Brokeruser" $LBSCONFIG/general.json`
 brokerpass=`jq -r ".Mqtt.Brokerpass" $LBSCONFIG/general.json`
@@ -213,6 +214,7 @@ mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
 jq ".MQTT.Bridge.ClientID = \"$hostname\"" /etc/config/addons/ccu-jack.cfg > /tmp/ccu-jack.cfg 
 mv /tmp/ccu-jack.cfg /etc/config/addons/ccu-jack.cfg
 if [ $UPGRADE -eq 0 ]; then
+	echo "<INFO> This seems to be a fresh installation. Adding defaults for CCU-Jack."
 	jq '.Users.loxberry = {
 		"Identifier": "loxberry",
 		"Active": true,
