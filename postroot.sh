@@ -256,7 +256,7 @@ fi
 . /boot/dietpi/.hw_model
 if [ $G_HW_ARCH -eq 1 ]; then # Pi0 und Pi1 or armv6l
 	echo "<INFO> Installing CCU-Jack binary for armv6l."
-	cp $PDATA/ccu-jack.pi1 /usr/local/addons/ccu-jack/ccu-jack
+	cp $PDATA/ccu-jack.rp1 /usr/local/addons/ccu-jack/ccu-jack
 elif [ $G_HW_ARCH -eq 2 ]; then # Pi2+3 or armv7l
 	echo "<INFO> Installing CCU-Jack binary for armv7l."
 	cp $PDATA/ccu-jack.rp2 /usr/local/addons/ccu-jack/ccu-jack
