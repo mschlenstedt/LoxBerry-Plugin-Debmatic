@@ -61,6 +61,17 @@ if [ $G_HW_MODEL -lt 10 ]; then
 
 	echo "<INFO> We are on a Raspberry. Add special options and packages for Raspberry..."
 
+	if [ -e /boot/firmware/config.txt ]; then
+		$configfile="/boot/firmware/config.txt"
+		$cmdlinefile="/boot/firmware/cmdline.txt"
+	elif [ -e /boot/config.txt ]; then
+		$configfile="/boot/config.txt"
+		$cmdlinefile="/boot/cmdline.txt"
+	else
+		echo "<FAIL> No config.txt found. Is this a Raspberry?"
+		exit 2
+	fi
+
 	if [ $UPDATE -eq 0 ]; then
 		echo "<INFO> Installing PIVCCU Modules..."
 		apt-get --no-install-recommends -y --allow-unauthenticated --fix-broken --reinstall --allow-downgrades --allow-remove-essential --allow-change-held-packages install pivccu-modules-raspberrypi
@@ -68,70 +79,70 @@ if [ $G_HW_MODEL -lt 10 ]; then
 		echo "<INFO> Do not install PIVCCU Modules once again because this is an Update..."
 	fi
 	echo "<INFO> Reconfigure Bluetooth"
-	if ! cat /boot/config.txt | grep -qe "^dtoverlay=pi3-disable-bt" && ! cat /boot/config.txt | grep -qe "^dtoverlay=pi3-miniuart-bt"; then
-		echo "<INFO> Adding dtoverlay=pi3-miniuart-bt to /boot/config.txt"
-		echo "" >> /boot/config.txt
-		echo "dtoverlay=pi3-miniuart-bt" >> /boot/config.txt
+	if ! cat $configfile | grep -qe "^dtoverlay=pi3-disable-bt" && ! cat $configfile | grep -qe "^dtoverlay=pi3-miniuart-bt"; then
+		echo "<INFO> Adding dtoverlay=pi3-miniuart-bt to $configfile"
+		echo "" >> $configfile
+		echo "dtoverlay=pi3-miniuart-bt" >> $configfile
 	else
-		echo "<INFO> dtoverlay=pi3-miniuart-bt or dtoverlay=pi3-disable-bt already set in /boot/config.txt"
+		echo "<INFO> dtoverlay=pi3-miniuart-bt or dtoverlay=pi3-disable-bt already set in $configfile"
 	fi
-	if ! cat /boot/config.txt | grep -qe "^enable_uart="; then
-		echo "<INFO> Adding enable_uart=1 to /boot/config.txt"
-		echo "" >> /boot/config.txt
-		echo "enable_uart=1" >> /boot/config.txt
+	if ! cat $configfile | grep -qe "^enable_uart="; then
+		echo "<INFO> Adding enable_uart=1 to $configfile"
+		echo "" >> $configfile
+		echo "enable_uart=1" >> $configfile
 	else
-		echo "<INFO> Replacing enable_uart with enable_uart=1 in /boot/config.txt"
-		/bin/sed -i 's#enable_uart=\(.*\)#enable_uart=1#g' /boot/config.txt
-		/bin/sed -i 's#enable_uart="\(.*\)"#enable_uart=1#g' /boot/config.txt
+		echo "<INFO> Replacing enable_uart with enable_uart=1 in $configfile"
+		/bin/sed -i 's#enable_uart=\(.*\)#enable_uart=1#g' $configfile
+		/bin/sed -i 's#enable_uart="\(.*\)"#enable_uart=1#g' $configfile
 	fi
-	if ! cat /boot/config.txt | grep -qe "^force_turbo="; then
-		echo "<INFO> Adding force_turbo=1 to /boot/config.txt"
-		echo "" >> /boot/config.txt
-		echo "force_turbo=1" >> /boot/config.txt
+	if ! cat $configfile | grep -qe "^force_turbo="; then
+		echo "<INFO> Adding force_turbo=1 to $configfile"
+		echo "" >> $configfile
+		echo "force_turbo=1" >> $configfile
 	else
-		echo "<INFO> Replacing force_turbo= with force_turbo=1 in /boot/config.txt"
-		/bin/sed -i 's#force_turbo=\(.*\)#force_turbo=1#g' /boot/config.txt
-		/bin/sed -i 's#force_turbo="\(.*\)"#force_turbo=1#g' /boot/config.txt
+		echo "<INFO> Replacing force_turbo= with force_turbo=1 in $configfile"
+		/bin/sed -i 's#force_turbo=\(.*\)#force_turbo=1#g' $configfile
+		/bin/sed -i 's#force_turbo="\(.*\)"#force_turbo=1#g' $configfile
 	fi
-	if ! cat /boot/config.txt | grep -qe "^core_freq="; then
-		echo "<INFO> Adding core_freq=250 to /boot/config.txt"
-		echo "" >> /boot/config.txt
-		echo "core_freq=250" >> /boot/config.txt
+	if ! cat $configfile | grep -qe "^core_freq="; then
+		echo "<INFO> Adding core_freq=250 to $configfile"
+		echo "" >> $configfile
+		echo "core_freq=250" >> $configfile
 	else
-		echo "<INFO> Replacing core_freq= with core_freq=250 in /boot/config.txt"
-		/bin/sed -i 's#core_freq=\(.*\)#core_freq=250#g' /boot/config.txt
-		/bin/sed -i 's#core_freq="\(.*\)"#core_freq=250#g' /boot/config.txt
+		echo "<INFO> Replacing core_freq= with core_freq=250 in $configfile"
+		/bin/sed -i 's#core_freq=\(.*\)#core_freq=250#g' $configfile
+		/bin/sed -i 's#core_freq="\(.*\)"#core_freq=250#g' $configfile
 	fi
 
 	echo "<INFO> Configuring serial interface..."
-	if cat /boot/config.txt | grep -qe "^init_uart_clock="; then
-		echo "<INFO> Removing init_uart_clock= from /boot/config.txt"
-		/bin/sed -i 's|^init_uart_clock=|#init_uart_clock=|g' /boot/config.txt
+	if cat $configfile | grep -qe "^init_uart_clock="; then
+		echo "<INFO> Removing init_uart_clock= from $configfile"
+		/bin/sed -i 's|^init_uart_clock=|#init_uart_clock=|g' $configfile
 	else
-		echo "<INFO> init_uart_clock= not found in /boot/config.txt. That's OK."
+		echo "<INFO> init_uart_clock= not found in $configfile. That's OK."
 	fi
 
 	echo "<INFO> Configuring I2C interface..."
-	if cat /boot/config.txt | grep -qe "^#dtparam=i2c_arm="; then
-		echo "<INFO> Adding dtparam=i2c_arm=on to /boot/config.txt"
-		/bin/sed -i 's|^#dtparam=i2c_arm=\(.*\)|dtparam=i2c_arm=on|g' /boot/config.txt
-	elif cat /boot/config.txt | grep -qe "^dtparam=i2c_arm=off"; then
-		echo "<INFO> Adding dtparam=i2c_arm=on to /boot/config.txt"
-		/bin/sed -i 's|^dtparam=i2c_arm=\(.*\)|dtparam=i2c_arm=on|g' /boot/config.txt
-	elif cat /boot/config.txt | grep -qe "^dtparam=i2c_arm="; then
-		echo "<INFO> Adding dtparam=i2c_arm=on to /boot/config.txt"
-		/bin/sed -i 's|^dtparam=i2c_arm=\(.*\)|dtparam=i2c_arm=on|g' /boot/config.txt
-	elif ! cat /boot/config.txt | grep -qe "dtparam=i2c_arm"; then
-		echo "<INFO> Adding dtparam=i2c_arm=on to /boot/config.txt"
-		echo "" >> /boot/config.txt
-		echo "dtparam=i2c_arm=on" >> /boot/config.txt
+	if cat $configfile | grep -qe "^#dtparam=i2c_arm="; then
+		echo "<INFO> Adding dtparam=i2c_arm=on to $configfile"
+		/bin/sed -i 's|^#dtparam=i2c_arm=\(.*\)|dtparam=i2c_arm=on|g' $configfile
+	elif cat $configfile | grep -qe "^dtparam=i2c_arm=off"; then
+		echo "<INFO> Adding dtparam=i2c_arm=on to $configfile"
+		/bin/sed -i 's|^dtparam=i2c_arm=\(.*\)|dtparam=i2c_arm=on|g' $configfile
+	elif cat $configfile | grep -qe "^dtparam=i2c_arm="; then
+		echo "<INFO> Adding dtparam=i2c_arm=on to $configfile"
+		/bin/sed -i 's|^dtparam=i2c_arm=\(.*\)|dtparam=i2c_arm=on|g' $configfile
+	elif ! cat $configfile | grep -qe "dtparam=i2c_arm"; then
+		echo "<INFO> Adding dtparam=i2c_arm=on to $configfile"
+		echo "" >> $configfile
+		echo "dtparam=i2c_arm=on" >> $configfile
 	else
-		echo "<INFO> dtparam=i2c_arm=on already set in /boot/config.txt"
+		echo "<INFO> dtparam=i2c_arm=on already set in $configfile"
 	fi
 
 	echo "<INFO> Disabling serial console in /boot/cmdline.txt"
-	/bin/sed -i /boot/cmdline.txt -e "s/console=ttyAMA0,[0-9]\+ //"
-	/bin/sed -i /boot/cmdline.txt -e "s/console=serial0,[0-9]\+ //"
+	/bin/sed -i $cmdlinefile -e "s/console=ttyAMA0,[0-9]\+ //"
+	/bin/sed -i $cmdlinefile -e "s/console=serial0,[0-9]\+ //"
 
 # We are on another Armbian System (no Raspberry)
 else
