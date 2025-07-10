@@ -62,11 +62,11 @@ if [ $G_HW_MODEL -lt 10 ]; then
 	echo "<INFO> We are on a Raspberry. Add special options and packages for Raspberry..."
 
 	if [ -e /boot/firmware/config.txt ]; then
-		$configfile = "/boot/firmware/config.txt"
-		$cmdlinefile = "/boot/firmware/cmdline.txt"
+		configfile="/boot/firmware/config.txt"
+		cmdlinefile="/boot/firmware/cmdline.txt"
 	elif [ -e /boot/config.txt ]; then
-		$configfile = "/boot/config.txt"
-		$cmdlinefile = "/boot/cmdline.txt"
+		configfile="/boot/config.txt"
+		cmdlinefile="/boot/cmdline.txt"
 	else
 		echo "<FAIL> No config.txt found. Is this a Raspberry?"
 		exit 2
